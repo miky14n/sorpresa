@@ -1,65 +1,252 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import * as THREE from "three";
+import { useRef, useEffect, useState } from "react";
+
+const IMAGES_COUNT = 8;
+const RADIUS = 4;
+const WHEEL_WIDTH = 3;
+
+function Cabin({ angle, index }) {
+  const ref = useRef();
+  const x = Math.cos(angle) * RADIUS;
+  const y = Math.sin(angle) * RADIUS;
+
+  useFrame((state) => {
+    if (ref.current) {
+      ref.current.quaternion.copy(state.camera.quaternion);
+    }
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <group position={[x, y, 0]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.05, 0.05, WHEEL_WIDTH]} />
+        <meshStandardMaterial color="#d4a373" />
+      </mesh>
+      <group ref={ref}>
+        <mesh position={[0, -0.8, 0.031]}>
+          <planeGeometry args={[1.6, 1.2]} />
+          <meshBasicMaterial
+            map={new THREE.TextureLoader().load(`/images/${index + 1}.jpg`)}
+            side={THREE.FrontSide}
+          />
+        </mesh>
+        <mesh position={[0, -0.8, -0.031]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[1.6, 1.2]} />
+          <meshBasicMaterial
+            map={new THREE.TextureLoader().load(`/images/${index + 9}.jpg`)}
+            side={THREE.FrontSide}
+          />
+        </mesh>
+        <mesh position={[0, -0.8, 0]}>
+          <boxGeometry args={[1.7, 1.3, 0.06]} />
+          <meshStandardMaterial color="#bc6c25" />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+function SupportStructure() {
+  const legLength = 6; // Largo de las patas
+  const angleV = 0.3; // Apertura del ^
+  const groundLevel = -RADIUS - 1.6;
+
+  return (
+    <group position={[0, 0, 0]}>
+      {/* Soportes laterales cafe oscuro */}
+      {[WHEEL_WIDTH / 2 + 0.6, -WHEEL_WIDTH / 2 - 0.6].map((z, i) => (
+        <group key={i} position={[0, 0, z]}>
+          {/* LADO IZQUIERDO DEL ^ */}
+          <group rotation={[0, 0, angleV]}>
+            {/* El Pivot está en 0,0,0. Bajamos la pata la mitad de su largo */}
+            <mesh position={[0, -legLength / 2, 0]}>
+              <boxGeometry args={[0.25, legLength, 0.25]} />
+              <meshStandardMaterial color="#3d1f05" />
+            </mesh>
+          </group>
+
+          {/* LADO DERECHO DEL ^ */}
+          <group rotation={[0, 0, -angleV]}>
+            <mesh position={[0, -legLength / 2, 0]}>
+              <boxGeometry args={[0.25, legLength, 0.25]} />
+              <meshStandardMaterial color="#3d1f05" />
+            </mesh>
+          </group>
+        </group>
+      ))}
+
+      {/* Base sólida en el suelo */}
+      <mesh position={[0, groundLevel - 0.2, 0]}>
+        <boxGeometry args={[8, 0.4, WHEEL_WIDTH + 3]} />
+        <meshStandardMaterial color="#2b1503" />
+      </mesh>
+    </group>
+  );
+}
+
+function FerrisWheel() {
+  const wheelRef = useRef();
+
+  useFrame(() => {
+    if (wheelRef.current) {
+      wheelRef.current.rotation.z += 0.005;
+    }
+  });
+
+  return (
+    <group>
+      <SupportStructure />
+
+      <group ref={wheelRef}>
+        {/* EJE CENTRAL: Las patas ahora muerden este cilindro */}
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.18, 0.18, WHEEL_WIDTH + 1.8]} />
+          <meshStandardMaterial color="#2b1503" />
+        </mesh>
+
+        {[WHEEL_WIDTH / 2, -WHEEL_WIDTH / 2].map((zPos, side) => (
+          <group key={side} position={[0, 0, zPos]}>
+            {Array.from({ length: IMAGES_COUNT }).map((_, i) => {
+              const angle = (i / IMAGES_COUNT) * Math.PI * 2;
+              const nextAngle = ((i + 1) / IMAGES_COUNT) * Math.PI * 2;
+              const midAngle = (angle + nextAngle) / 2;
+              return (
+                <group key={i}>
+                  <mesh
+                    rotation={[0, 0, angle]}
+                    position={[
+                      (Math.cos(angle) * RADIUS) / 2,
+                      (Math.sin(angle) * RADIUS) / 2,
+                      0,
+                    ]}
+                  >
+                    <boxGeometry args={[RADIUS, 0.08, 0.08]} />
+                    <meshStandardMaterial color="#d4a373" />
+                  </mesh>
+                  <mesh
+                    position={[
+                      Math.cos(midAngle) * RADIUS,
+                      Math.sin(midAngle) * RADIUS,
+                      0,
+                    ]}
+                    rotation={[0, 0, midAngle + Math.PI / 2]}
+                  >
+                    <boxGeometry args={[3.2, 0.12, 0.1]} />
+                    <meshStandardMaterial color="#bc6c25" />
+                  </mesh>
+                </group>
+              );
+            })}
+          </group>
+        ))}
+
+        {Array.from({ length: IMAGES_COUNT }).map((_, i) => (
+          <Cabin key={i} index={i} angle={(i / IMAGES_COUNT) * Math.PI * 2} />
+        ))}
+      </group>
+    </group>
+  );
+}
+
+export default function Page() {
+  const targetDate = new Date("2026-01-22T00:00:00");
+  const [timeLeft, setTimeLeft] = useState("");
+  const [canView, setCanView] = useState(false);
+  useEffect(() => {
+    const now = new Date();
+
+    // Mostrar solo el 22
+    if (
+      now.getDate() === 22 &&
+      now.getMonth() === 0 // Enero = 0
+    ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCanView(true);
+      audioRef.current?.play();
+    }
+
+    // Contador
+    const interval = setInterval(() => {
+      const diff = targetDate - new Date();
+      if (diff <= 0) {
+        setTimeLeft("¡Hoy es el día!");
+        clearInterval(interval);
+      } else {
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        setTimeLeft(`${h}h ${m}m ${s}s`);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+  if (!canView) {
+    return (
+      <div style={styles.center}>
+        <h1>🎁 Evento no disponible</h1>
+        <p>Disponible el 22 de enero</p>
+        <h2>{timeLeft}</h2>
+      </div>
+    );
+  }
+  return (
+    <div className="w-screen h-screen bg-white">
+      <Canvas>
+        <PerspectiveCamera makeDefault position={[0, 0, 11]} fov={50} />
+        <ambientLight intensity={1.5} />
+        <pointLight position={[10, 10, 10]} intensity={2} />
+        <directionalLight position={[-5, 5, 5]} intensity={1} />
+        <FerrisWheel />
+        <OrbitControls
+          enablePan={false}
+          minDistance={6}
+          maxDistance={15}
+          target={[0, 0, 0]}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </Canvas>
     </div>
   );
 }
+const styles = {
+  container: {
+    textAlign: "center",
+    marginTop: "40px",
+  },
+  wheelWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    margin: "40px 0",
+  },
+  wheel: {
+    width: "300px",
+    height: "300px",
+    borderRadius: "50%",
+    border: "5px solid #000",
+    position: "relative",
+    transition: "transform 4s ease-out",
+  },
+  prize: {
+    position: "absolute",
+    width: "60px",
+    top: "50%",
+    left: "50%",
+    transformOrigin: "0 0",
+  },
+  button: {
+    padding: "10px 20px",
+    fontSize: "18px",
+    cursor: "pointer",
+  },
+  center: {
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+};
