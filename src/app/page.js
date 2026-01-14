@@ -185,7 +185,15 @@ export default function Page() {
 
     return () => clearInterval(interval);
   }, []);
-
+  if (!canView) {
+    return (
+      <div style={styles.center}>
+        <h1>🎁 Evento no disponible</h1>
+        <p>Disponible el 22 de enero</p>
+        <h2>{timeLeft}</h2>
+      </div>
+    );
+  }
   return (
     <div className="w-screen h-screen bg-white">
       <Canvas>
