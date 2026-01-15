@@ -93,7 +93,7 @@ function FerrisWheel() {
 
   useFrame(() => {
     if (wheelRef.current) {
-      wheelRef.current.rotation.z += 0.005;
+      wheelRef.current.rotation.z += -0.003;
     }
   });
 

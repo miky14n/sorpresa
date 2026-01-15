@@ -28,14 +28,14 @@ export default function TimerEvent(params) {
   // 🔒 EVENTO NO DISPONIBLE
   if (!canView) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white">
+      <div className="w-screen h-screen flex items-center justify-center bg-linear-to-br from-blue-600 via-blue-900 to-cyan-600 text-white">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-10 shadow-2xl text-center max-w-md">
           <h1 className="text-3xl font-bold mb-3">🎡 Evento no disponible</h1>
           <p className="text-slate-300 mb-6">
-            La rueda se habilitará el{" "}
+            Tu sorpresa estara disponible el{" "}
             <span className="font-semibold">22 de enero</span>
           </p>
-
+          <h1 className="text-3xl font-bold mb-3">Faltan</h1>
           {timeLeft ? (
             <div className="grid grid-cols-4 gap-4 text-center">
               {[
