@@ -30,7 +30,9 @@ export default function TimerEvent(params) {
     return (
       <div className="w-screen h-screen flex items-center justify-center bg-linear-to-br from-blue-600 via-blue-900 to-cyan-600 text-white">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-10 shadow-2xl text-center max-w-md">
-          <h1 className="text-3xl font-bold mb-3">🎡 Evento no disponible</h1>
+          <h1 className="text-3xl font-bold mb-3">
+            🌷Espero que te guste amor🌷
+          </h1>
           <p className="text-slate-300 mb-6">
             Tu sorpresa estara disponible el{" "}
             <span className="font-semibold">22 de enero</span>
