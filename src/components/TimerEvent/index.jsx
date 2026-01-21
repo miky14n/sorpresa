@@ -1,5 +1,6 @@
 "use client";
 import getTimeLeft from "@/app/functions/functions";
+import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 
 export default function TimerEvent(params) {
@@ -38,7 +39,7 @@ export default function TimerEvent(params) {
             <span className="font-semibold">22 de enero</span>
           </p>
           <h1 className="text-3xl font-bold mb-3">Faltan</h1>
-          {timeLeft ? (
+          {!timeLeft ? (
             <div className="grid grid-cols-4 gap-4 text-center">
               {[
                 { label: "DÍAS", value: timeLeft.days },
@@ -60,9 +61,12 @@ export default function TimerEvent(params) {
               ))}
             </div>
           ) : (
-            <p className="mt-6 text-lg font-semibold text-green-400">
-              ¡Hoy es el día! 🎉
-            </p>
+            <div>
+              <p className="mt-6 text-lg font-semibold text-green-400">
+                ¡Hoy es el día! 🎉
+              </p>
+              <Link href={"/rueda"}>Ir a tu sorpresa</Link>
+            </div>
           )}
         </div>
       </div>
