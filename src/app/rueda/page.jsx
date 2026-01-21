@@ -7,7 +7,7 @@ import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import Balloons from "@/components/Balloons";
 
 const IMAGES_COUNT = 11;
-const RADIUS = 5;
+const RADIUS = 6;
 const WHEEL_WIDTH = 3.5;
 
 // --- LOADER PERSONALIZADO ---
