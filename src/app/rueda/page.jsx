@@ -5,6 +5,7 @@ import { OrbitControls, PerspectiveCamera, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import Balloons from "@/components/Balloons";
+import LetterModal from "@/components/LetterModal";
 
 const IMAGES_COUNT = 11;
 const RADIUS = 6;
@@ -220,7 +221,8 @@ export default function Page() {
   return (
     <div className="w-screen h-screen bg-yellow-300 relative overflow-hidden">
       <audio ref={audioRef} loop src="/music/thatgirl.mp3" />
-
+      {/* Agrega el componente LetterModal aquí */}
+      <LetterModal /> {/* <-- AÑADE ESTA LÍNEA */}
       {/* 1. MODAL INICIAL */}
       {!started && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80 backdrop-blur-md">
@@ -232,7 +234,6 @@ export default function Page() {
           </button>
         </div>
       )}
-
       <Canvas shadows>
         <PerspectiveCamera makeDefault position={[16, 1, 1]} fov={50} />
         <ambientLight intensity={1.5} />
