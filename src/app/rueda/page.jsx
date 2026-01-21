@@ -8,7 +8,7 @@ import Balloons from "@/components/Balloons";
 
 const IMAGES_COUNT = 11;
 const RADIUS = 5;
-const WHEEL_WIDTH = 3;
+const WHEEL_WIDTH = 3.5;
 
 // --- LOADER PERSONALIZADO ---
 function Loader() {
@@ -30,7 +30,7 @@ function Cabin({ angle, index }) {
 
   // --- CORRECCIÓN AQUÍ ---
   // Supongamos que tienes un total de 16 fotos en tu carpeta (1.jpg hasta 16.jpg)
-  const TOTAL_FOTOS_DISPONIBLES = 16;
+  const TOTAL_FOTOS_DISPONIBLES = 22;
 
   // El '%' asegura que el número nunca exceda el total de tus fotos
   const fotoFrontal = (index % TOTAL_FOTOS_DISPONIBLES) + 1;
@@ -54,16 +54,16 @@ function Cabin({ angle, index }) {
       </mesh>
 
       <group ref={ref}>
-        <mesh position={[0, -0.9, 0.031]}>
-          <planeGeometry args={[2.1, 1.5]} />
+        <mesh position={[0, -0.95, 0.031]}>
+          <planeGeometry args={[2.7, 1.8]} />
           <meshBasicMaterial map={tex1} side={THREE.FrontSide} />
         </mesh>
-        <mesh position={[0, -0.9, -0.031]} rotation={[0, Math.PI, 0]}>
-          <planeGeometry args={[2.1, 1.5]} />
+        <mesh position={[0, -0.95, -0.031]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[2.7, 1.8]} />
           <meshBasicMaterial map={tex2} side={THREE.FrontSide} />
         </mesh>
-        <mesh position={[0, -0.9, 0]}>
-          <boxGeometry args={[2.2, 1.6, 0.06]} />
+        <mesh position={[0, -0.95, 0]}>
+          <boxGeometry args={[2.9, 1.97, 0.06]} />
           <meshStandardMaterial color="#bc6c25" />
         </mesh>
       </group>
